@@ -1,11 +1,7 @@
 import React from 'react';
 import {
-  Image,
-  Platform,
-  ScrollView,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
   ImageBackground,
   TextInput,
@@ -13,9 +9,6 @@ import {
 } from 'react-native';
 import {firebaseAuth} from '../utils/firebase'
 import { Button } from 'react-native-elements'
-import { WebBrowser } from 'expo';
-
-import { MonoText } from '../components/StyledText';
 
 export default class HomeScreen extends React.Component {
   state = { email: '', password: '' };
