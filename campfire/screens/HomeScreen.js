@@ -7,182 +7,127 @@ import {
   Text,
   TouchableOpacity,
   View,
+  ImageBackground,
+  TextInput,
+  Alert,
 } from 'react-native';
+import {firebaseAuth} from '../utils/firebase'
+import { Button } from 'react-native-elements'
 import { WebBrowser } from 'expo';
 
 import { MonoText } from '../components/StyledText';
 
 export default class HomeScreen extends React.Component {
+  state = { email: '', password: '' };
+  
   static navigationOptions = {
     header: null,
   };
 
   render() {
     return (
-      <View style={styles.container}>
-        <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-          <View style={styles.welcomeContainer}>
-            <Image
-              source={
-                __DEV__
-                  ? require('../assets/images/robot-dev.png')
-                  : require('../assets/images/robot-prod.png')
-              }
-              style={styles.welcomeImage}
+      <ImageBackground
+        style={styles.backgroundImage}
+        source={{ uri: 'https://www.natezeman.com/images/xl/0551_NZ_Sky_Dance_WM.jpg' }}
+      >
+        <View style={styles.formContainer}>
+          <View style={styles.textContainer}>
+            <Text style={styles.titleText}>Campfire</Text>
+          </View>
+          <View style={styles.inputContainer}>
+            <TextInput
+              style={styles.input}
+              placeholder="Email"
+              placeholderTextColor="white"
+              autoCapitalize="none"
+              spellCheck={false}
+              value={this.state.email}
+              onChangeText={(newEmail) => this.setState({ email: newEmail })}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Password"
+              placeholderTextColor="white"
+              secureTextEntry={true}
+              autoCapitalize="none"
+              spellCheck={false}
+              value={this.state.password}
+              onChangeText={(newPassword) => this.setState({ password: newPassword })}
             />
           </View>
-
-          <View style={styles.getStartedContainer}>
-            {this._maybeRenderDevelopmentModeWarning()}
-
-            <Text style={styles.getStartedText}>Get started by opening</Text>
-
-            <View style={[styles.codeHighlightContainer, styles.homeScreenFilename]}>
-              <MonoText style={styles.codeHighlightText}>screens/HomeScreen.js</MonoText>
-            </View>
-
-            <Text style={styles.getStartedText}>
-              Change this text and your app will automatically reload.
-            </Text>
-          </View>
-
-          <View style={styles.helpContainer}>
-            <TouchableOpacity onPress={this._handleHelpPress} style={styles.helpLink}>
-              <Text style={styles.helpLinkText}>Help, it didn’t automatically reload!</Text>
-            </TouchableOpacity>
-          </View>
-        </ScrollView>
-
-        <View style={styles.tabBarInfoContainer}>
-          <Text style={styles.tabBarInfoText}>This is a tab bar. You can edit it in:</Text>
-
-          <View style={[styles.codeHighlightContainer, styles.navigationFilename]}>
-            <MonoText style={styles.codeHighlightText}>navigation/MainTabNavigator.js</MonoText>
-          </View>
+          <Button
+            title='LOG IN'
+            buttonStyle={styles.button}
+            textStyle={{ fontWeight: 'bold', color: 'white' }}
+            onPress={this.handleLogin}
+          />
         </View>
-      </View>
+      </ImageBackground>
     );
   }
 
-  _maybeRenderDevelopmentModeWarning() {
-    if (__DEV__) {
-      const learnMoreButton = (
-        <Text onPress={this._handleLearnMorePress} style={styles.helpLinkText}>
-          Learn more
-        </Text>
-      );
-
-      return (
-        <Text style={styles.developmentModeText}>
-          Development mode is enabled, your app will be slower but you can use useful development
-          tools. {learnMoreButton}
-        </Text>
-      );
-    } else {
-      return (
-        <Text style={styles.developmentModeText}>
-          You are not in development mode, your app will run at full speed.
-        </Text>
-      );
-    }
+  handleLogin = () => {
+    const { email, password } = this.state;
+    firebaseAuth.signInWithEmailAndPassword(email, password)
+      .then(() => { Alert.alert("Success!", "You're all set.") })
+      .catch(() => {
+        Alert.alert("Login Failed!", "Incorrect Email/Password.",
+          [
+            { text: 'Send Reset Password Email', onPress: this.handlePasswordReset },
+            { text: 'OK', onPress: () => console.log('OK Pressed') },
+          ],
+          { cancelable: false }
+        );
+      });
   }
 
-  _handleLearnMorePress = () => {
-    WebBrowser.openBrowserAsync('https://docs.expo.io/versions/latest/guides/development-mode');
-  };
-
-  _handleHelpPress = () => {
-    WebBrowser.openBrowserAsync(
-      'https://docs.expo.io/versions/latest/guides/up-and-running.html#can-t-see-your-changes'
-    );
-  };
+  handlePasswordReset = () => {
+    firebaseAuth.sendPasswordResetEmail(this.state.email).then(function () {
+      Alert.alert("Success", "Reset password email sent.");
+    }).catch(function (error) {
+      Alert.alert("Oops!", "Reset password email couldn't be sent.");
+    });
+  }
 }
 
 const styles = StyleSheet.create({
-  container: {
+  formContainer: {
+    height: 200,
+    justifyContent: 'space-around',
+  },
+  inputContainer: {
+    height: 100,
+    justifyContent: 'space-around',
+
+  },
+  input: {
+    borderBottomColor: 'white',
+    borderBottomWidth: 0.5,
+    color: 'white',
+    padding: 7,
+  },
+  button: {
+    height: 50,
+    width: 250,
+    backgroundColor: 'transparent',
+    borderWidth: 2,
+    borderColor: 'white',
+    borderRadius: 30,
+  },
+  backgroundImage: {
     flex: 1,
-    backgroundColor: '#fff',
-  },
-  developmentModeText: {
-    marginBottom: 20,
-    color: 'rgba(0,0,0,0.4)',
-    fontSize: 14,
-    lineHeight: 19,
-    textAlign: 'center',
-  },
-  contentContainer: {
-    paddingTop: 30,
-  },
-  welcomeContainer: {
     alignItems: 'center',
-    marginTop: 10,
-    marginBottom: 20,
+    justifyContent: 'center',
   },
-  welcomeImage: {
-    width: 100,
-    height: 80,
-    resizeMode: 'contain',
-    marginTop: 3,
-    marginLeft: -10,
-  },
-  getStartedContainer: {
+  textContainer: {
+    flex: 1,
+    justifyContent: 'center',
     alignItems: 'center',
-    marginHorizontal: 50,
+    //marginBottom: 40,
   },
-  homeScreenFilename: {
-    marginVertical: 7,
-  },
-  codeHighlightText: {
-    color: 'rgba(96,100,109, 0.8)',
-  },
-  codeHighlightContainer: {
-    backgroundColor: 'rgba(0,0,0,0.05)',
-    borderRadius: 3,
-    paddingHorizontal: 4,
-  },
-  getStartedText: {
-    fontSize: 17,
-    color: 'rgba(96,100,109, 1)',
-    lineHeight: 24,
-    textAlign: 'center',
-  },
-  tabBarInfoContainer: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    ...Platform.select({
-      ios: {
-        shadowColor: 'black',
-        shadowOffset: { height: -3 },
-        shadowOpacity: 0.1,
-        shadowRadius: 3,
-      },
-      android: {
-        elevation: 20,
-      },
-    }),
-    alignItems: 'center',
-    backgroundColor: '#fbfbfb',
-    paddingVertical: 20,
-  },
-  tabBarInfoText: {
-    fontSize: 17,
-    color: 'rgba(96,100,109, 1)',
-    textAlign: 'center',
-  },
-  navigationFilename: {
-    marginTop: 5,
-  },
-  helpContainer: {
-    marginTop: 15,
-    alignItems: 'center',
-  },
-  helpLink: {
-    paddingVertical: 15,
-  },
-  helpLinkText: {
-    fontSize: 14,
-    color: '#2e78b7',
+  titleText: {
+    color: 'white',
+    fontSize: 30,
+    fontWeight: '800',
   },
 });
