@@ -1,7 +1,6 @@
-// TODO: use dotenv or firebase-functions
 import firebase from 'firebase';
 
-// TODO: use firebase cloud functions to mask API key (firebase-functions)
+// TODO: use firebase cloud functions to mask API key (firebase-functions) or dotenv
 const config = {
     apiKey: "AIzaSyCRT2qfA8NWb7K-Ok7U4pHPsk7uhTuQlo8",
     authDomain: "campfire-c8b22.firebaseapp.com",

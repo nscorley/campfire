@@ -1,4 +1,5 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import {
   StyleSheet,
   Text,
@@ -7,15 +8,42 @@ import {
   TextInput,
   Alert,
 } from 'react-native';
-import {firebaseAuth} from '../utils/firebase'
-import { Button } from 'react-native-elements'
+import { Button } from 'react-native-elements';
+import { firebaseAuth } from '../utils/firebase';
+import { asyncUserLogin } from '../actions/userActions';
 
-export default class HomeScreen extends React.Component {
-  state = { email: '', password: '' };
-  
+class LoginScreen extends React.Component {
   static navigationOptions = {
     header: null,
   };
+
+  state = {
+    email: '',
+    password: '',
+  };
+
+  handleLogin = () => {
+    const { email, password } = this.state;
+    this.props.asyncUserLogin(email, password)
+      .then(() => {
+        // Navigate to next page
+        this.props.navigation.navigate('Main');
+      })
+      .catch(() => {
+        console.log('WRONG PASSWORD');
+        { /* TODO: maybe that shake thing when you enter the wrong login! */ }
+        // Handle incorrect password
+      });
+  }
+
+  handlePasswordReset = () => {
+    firebaseAuth.sendPasswordResetEmail(this.state.email).then(() => {
+      // TODO: a version of this without alerts... see functionality of other apps (airbmb)
+      Alert.alert('Success', 'Reset password email sent.');
+    }).catch(() => {
+      Alert.alert('Oops!', "Reset password email couldn't be sent.");
+    });
+  }
 
   render() {
     return (
@@ -35,51 +63,31 @@ export default class HomeScreen extends React.Component {
               autoCapitalize="none"
               spellCheck={false}
               value={this.state.email}
-              onChangeText={(newEmail) => this.setState({ email: newEmail })}
+              onChangeText={newEmail => this.setState({ email: newEmail })}
             />
             <TextInput
               style={styles.input}
               placeholder="Password"
               placeholderTextColor="white"
-              secureTextEntry={true}
+              secureTextEntry
               autoCapitalize="none"
               spellCheck={false}
               value={this.state.password}
-              onChangeText={(newPassword) => this.setState({ password: newPassword })}
+              onChangeText={newPassword => this.setState({ password: newPassword })}
             />
           </View>
           <Button
-            title='LOG IN'
+            title="LOG IN"
             buttonStyle={styles.button}
             textStyle={{ fontWeight: 'bold', color: 'white' }}
             onPress={this.handleLogin}
           />
+          {/* TODO: link to create an account here */}
+          {/* TODO: some kind of loading spinner... use redux or state if you're lazy */}
+
         </View>
       </ImageBackground>
     );
-  }
-
-  handleLogin = () => {
-    const { email, password } = this.state;
-    firebaseAuth.signInWithEmailAndPassword(email, password)
-      .then(() => { Alert.alert("Success!", "You're all set.") })
-      .catch(() => {
-        Alert.alert("Login Failed!", "Incorrect Email/Password.",
-          [
-            { text: 'Send Reset Password Email', onPress: this.handlePasswordReset },
-            { text: 'OK', onPress: () => console.log('OK Pressed') },
-          ],
-          { cancelable: false }
-        );
-      });
-  }
-
-  handlePasswordReset = () => {
-    firebaseAuth.sendPasswordResetEmail(this.state.email).then(function () {
-      Alert.alert("Success", "Reset password email sent.");
-    }).catch(function (error) {
-      Alert.alert("Oops!", "Reset password email couldn't be sent.");
-    });
   }
 }
 
@@ -116,7 +124,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    //marginBottom: 40,
   },
   titleText: {
     color: 'white',
@@ -124,3 +131,15 @@ const styles = StyleSheet.create({
     fontWeight: '800',
   },
 });
+
+const mapDispatchToProps = dispatch => ({
+  asyncUserLogin: (email, password) => dispatch(asyncUserLogin(email, password)),
+});
+
+const mapStateToProps = ({ error, authed }) => (
+  {
+    error,
+    authed,
+  }
+);
+export default connect(mapStateToProps, mapDispatchToProps)(LoginScreen);
