@@ -31,7 +31,7 @@ class LoginScreen extends React.Component {
       })
       .catch(() => {
         console.log('WRONG PASSWORD');
-        { /* TODO: maybe that shake thing when you enter the wrong login! */ }
+        // TODO: maybe that shake thing when you enter the wrong login!
         // Handle incorrect password
       });
   }

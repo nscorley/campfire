@@ -8,7 +8,7 @@ import userReducer from './userReducer';
 
 // primary root reducer
 const rootReducer = combineReducers({
-    user: userReducer,
+  user: userReducer,
 });
 
 export default rootReducer;
