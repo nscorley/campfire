@@ -11,7 +11,6 @@ export default class WelcomeScreen extends React.Component {
     };
 
     render() {
-      debugger;
       return (
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
           <Text>Welcome!</Text>

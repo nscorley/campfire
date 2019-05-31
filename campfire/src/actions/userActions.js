@@ -10,6 +10,11 @@ import {
 } from './actionTypes';
 import { firebaseAuth } from '../utils/firebase';
 
+/**
+ * Logs in the user given the email and password combination
+ * @param {string } email
+ * @param { string } password
+ */
 export const asyncUserLogin = (email, password) => dispatch => (
   firebaseAuth.signInWithEmailAndPassword(email, password)
     .then(() => {
@@ -24,6 +29,22 @@ export const asyncUserLogin = (email, password) => dispatch => (
     })
 );
 
+/**
+ * Creates a new user given the username, email, and password
+ * @param {string} username
+ * @param {string} email
+ * @param {string} password
+ */
+export const createUser = (username, email, password) => dispatch => (
+  firebaseAuth.createUserWithEmailAndPassword(email, password)
+    .then(() => {
+      console.log('User Created');
+    })
+    .catch((error) => {
+      console.log(error);
+      // TODO: handle error here
+    })
+);
 
 /**
  * Login request failure

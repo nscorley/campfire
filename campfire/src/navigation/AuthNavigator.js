@@ -11,5 +11,7 @@ export default createStackNavigator(
     Login: LoginScreen,
     VerifyEmail: VerifyEmailScreen,
   },
-  { initialRouteName: 'Welcome' },
+  {
+    initialRouteName: 'Login',
+  },
 );
