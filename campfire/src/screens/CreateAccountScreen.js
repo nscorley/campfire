@@ -30,7 +30,7 @@ class CreateAccountScreen extends React.Component {
     // TODO: handle invalid emails, previously used emails here
     // TODO: password requirements
     if (isValidEmail(this.state.email) && isUnusedEmail(this.state.email)) {
-      createUser(this.state.email, this.state.password)
+      this.props.createAccount(this.state.email, this.state.password)
         .then(() => {
           // TODO: send verification email
         });
@@ -117,7 +117,7 @@ class CreateAccountScreen extends React.Component {
 }
 
 const mapDispatchToProps = dispatch => ({
-  createAccount: () => console.log('Great!'),
+  createAccount: (email, password) => createUser(email, password),
 });
 
 const styles = StyleSheet.create({

@@ -31,20 +31,27 @@ export const asyncUserLogin = (email, password) => dispatch => (
 
 /**
  * Creates a new user given the username, email, and password
- * @param {string} username
  * @param {string} email
  * @param {string} password
  */
-export const createUser = (username, email, password) => dispatch => (
+export const createUser = (email, password) => dispatch => (
   firebaseAuth.createUserWithEmailAndPassword(email, password)
     .then(() => {
       console.log('User Created');
+      return Promise.resolve();
     })
     .catch((error) => {
       console.log(error);
       // TODO: handle error here
+      return Promise.reject();
     })
 );
+
+/**
+ * Creates a new user given the username, email, and password
+ * @param {string} email
+ * @param {string} password
+ */
 
 /**
  * Login request failure
